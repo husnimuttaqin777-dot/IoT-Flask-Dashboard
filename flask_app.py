@@ -162,6 +162,30 @@ def get_mqtt_data():
     return jsonify(latest_mqtt_data)
 
 
+current_dw = [
+    {"n": "D13", "v": 0},
+    {"n": "D1",  "v": 0},
+    {"n": "D0",  "v": 0},
+    {"n": "D14", "v": 0},
+]
+
+@app.route('/last_dw', methods=['GET'])
+def last_dw():
+    return jsonify(current_dw)
+
+@app.route('/set_dw', methods=['POST'])
+def set_dw():
+    global current_dw
+    data = request.json
+    i = data.get('index')
+    v = data.get('value', 0)
+    if i is not None and 0 <= i < len(current_dw):
+        current_dw[i]['v'] = v
+        # publish to MQTT if needed:
+        # mqtt_client.publish(current_dw[i]['n'], str(v))
+    print("DW state:", current_dw)
+    return jsonify({"status": "ok", "dw": current_dw})
+
 # ======================================
 # MAIN
 # ======================================
