@@ -1,328 +1,876 @@
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg0:#0e0f11;
-    --bg1:#15171a;
-    --bg2:#1c1f23;
-    --bg3:#23272d;
-    --border:#2a2f38;
-    --border2:#353c47;
-    --text0:#e8eaed;
-    --text1:#9aa3b0;
-    --text2:#5a6475;
-    --teal:#1D9E75;
-    --teal-dim:#0f4d39;
-    --blue:#378ADD;
-    --blue-dim:#0d2f52;
-    --amber:#BA7517;
-    --coral:#D85A30;
-  }
-  .root{font-family:'DM Sans',sans-serif;background:var(--bg0);border-radius:14px;padding:20px;color:var(--text0);min-height:100px}
-  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-  .brand{display:flex;align-items:center;gap:10px}
-  .brand-icon{width:32px;height:32px;border-radius:8px;background:var(--bg2);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;color:var(--text1)}
-  .brand-name{font-size:13px;font-weight:500;letter-spacing:0.04em;color:var(--text0)}
-  .brand-sub{font-size:11px;color:var(--text2);margin-top:1px;font-family:'DM Mono',monospace}
-  .live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--teal);font-family:'DM Mono',monospace}
-  .dot{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:blink 2s infinite}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-  .hr{height:0.5px;background:var(--border);margin-bottom:18px}
-  .sec{margin-bottom:18px}
-  .sec-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-  .sec-lbl{font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text2);white-space:nowrap;font-family:'DM Mono',monospace}
-  .sec-rule{flex:1;height:0.5px;background:var(--border)}
-  .gauge-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .gauge-card{background:var(--bg1);border:0.5px solid var(--border);border-radius:12px;padding:16px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color 0.2s}
-  .gauge-card:hover{border-color:var(--border2)}
-  .gauge-pin{font-size:10px;letter-spacing:0.1em;color:var(--text2);font-family:'DM Mono',monospace}
-  .gauge-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:300;line-height:1}
-  .gauge-pct{font-size:10px;color:var(--text2);font-family:'DM Mono',monospace}
-  .stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
-  .stat-cell{background:var(--bg2);border-radius:8px;padding:9px 12px}
-  .stat-lbl{font-size:10px;color:var(--text2);font-family:'DM Mono',monospace;margin-bottom:3px;letter-spacing:0.06em}
-  .stat-val{font-size:16px;font-weight:300;font-family:'DM Mono',monospace;color:var(--text0)}
-  .chart-wrap{position:relative;width:100%;height:130px}
-  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-  .card{background:var(--bg1);border:0.5px solid var(--border);border-radius:12px;padding:16px}
-  .pin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-  .pin-tile{border:0.5px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;background:var(--bg2);cursor:pointer;transition:all 0.15s;user-select:none}
-  .pin-tile:hover{border-color:var(--border2)}
-  .pin-tile.hi-write{background:var(--blue-dim);border-color:#1a4a7a}
-  .pin-name{font-size:10px;font-family:'DM Mono',monospace;color:var(--text2);margin-bottom:7px}
-  .pin-tile.hi-write .pin-name{color:#7ab8f0}
-  .pin-dot{width:7px;height:7px;border-radius:50%;margin:0 auto 6px;transition:background 0.2s}
-  .pin-status{font-size:10px;font-weight:500;font-family:'DM Mono',monospace;color:var(--text2)}
-  .pwm-block{margin-bottom:13px}
-  .pwm-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
-  .pwm-name{font-size:11px;font-family:'DM Mono',monospace;color:var(--text1)}
-  .pwm-val{font-size:13px;font-family:'DM Mono',monospace;font-weight:400;color:var(--text0)}
-  .pwm-track{height:2px;border-radius:2px;background:var(--bg3);margin-top:5px;overflow:hidden}
-  .pwm-fill{height:100%;border-radius:2px;background:var(--blue);transition:width 0.2s}
-  .pwm-sub{display:flex;justify-content:flex-end;margin-top:3px}
-  .pwm-pct{font-size:10px;font-family:'DM Mono',monospace;color:var(--text2)}
-  .preset-row{display:flex;gap:5px;margin-top:10px}
-  .preset{font-size:11px;padding:4px 10px;border-radius:6px;border:0.5px solid var(--border2);background:transparent;color:var(--text1);cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s}
-  .preset:hover{background:var(--bg3)}
-  .foot{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:var(--text2);font-family:'DM Mono',monospace}
-  input[type=range]{width:100%;accent-color:var(--blue)}
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IoT Control Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<div class="root">
-  <div class="topbar">
-    <div class="brand">
-      <div class="brand-icon"><i class="ti ti-circuit-board" aria-hidden="true" style="font-size:17px"></i></div>
+    :root {
+      --bg:       #080a0c;
+      --bg1:      #0d1014;
+      --bg2:      #111419;
+      --bg3:      #181c22;
+      --border:   #1e242d;
+      --border2:  #262d38;
+      --text0:    #e2e8f0;
+      --text1:    #7d8fa8;
+      --text2:    #3d4d62;
+      --teal:     #00e5a0;
+      --teal-dim: #00301f;
+      --blue:     #3d8ef5;
+      --blue-dim: #0a1f3d;
+      --amber:    #f5a623;
+      --coral:    #f55a3d;
+      --purple:   #a78bfa;
+      --glow-t:   rgba(0,229,160,0.15);
+      --glow-b:   rgba(61,142,245,0.15);
+      --mono:     'Space Mono', monospace;
+      --sans:     'Syne', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text0);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* ── SCAN LINE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-left { display: flex; align-items: center; gap: 16px; }
+
+    .logo {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .logo::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--glow-t), transparent 60%);
+    }
+    .logo i { font-size: 18px; color: var(--teal); position: relative; z-index: 1; }
+
+    .brand-name {
+      font-size: 18px; font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text0);
+    }
+    .brand-sub {
+      font-family: var(--mono);
+      font-size: 10px; color: var(--text2);
+      margin-top: 2px; letter-spacing: 0.08em;
+    }
+
+    .header-right { display: flex; align-items: center; gap: 14px; }
+
+    .live-badge {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--teal-dim);
+      border: 1px solid rgba(0,229,160,0.2);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-family: var(--mono); font-size: 10px; color: var(--teal);
+      letter-spacing: 0.1em;
+    }
+    .pulse {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--teal);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,160,0.4); }
+      50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(0,229,160,0); }
+    }
+
+    .clock {
+      font-family: var(--mono); font-size: 12px; color: var(--text1);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── SECTION LABEL ── */
+    .sec-head {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .sec-lbl {
+      font-family: var(--mono); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--text2);
+      white-space: nowrap;
+    }
+    .sec-rule { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── ANALOG GAUGES ── */
+    .analog-section { margin-bottom: 28px; }
+
+    .gauge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .gauge-card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 12px 16px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .gauge-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-2px);
+    }
+    .gauge-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: var(--glow-color, var(--teal));
+      opacity: 0.4;
+    }
+
+    .gauge-pin {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.14em;
+      color: var(--text2); text-transform: uppercase;
+    }
+    .gauge-val {
+      font-family: var(--mono); font-size: 22px; font-weight: 700;
+      line-height: 1; color: var(--glow-color, var(--teal));
+    }
+    .gauge-pct {
+      font-family: var(--mono); font-size: 10px; color: var(--text2);
+    }
+
+    /* ── CHART SECTION ── */
+    .chart-section { margin-bottom: 28px; }
+
+    .stat-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 8px; margin-bottom: 12px;
+    }
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .stat-lbl {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text2); margin-bottom: 5px;
+    }
+    .stat-val {
+      font-family: var(--mono); font-size: 20px; font-weight: 700;
+      color: var(--text0);
+    }
+    .stat-card.primary .stat-val { color: var(--teal); }
+
+    .chart-wrap {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      height: 150px; position: relative;
+    }
+
+    /* ── BOTTOM GRID ── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .panel {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    /* ── PWM ── */
+    .pwm-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .pwm-block {}
+    .pwm-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .pwm-pin {
+      font-family: var(--mono); font-size: 11px; color: var(--text1);
+      letter-spacing: 0.06em;
+    }
+    .pwm-num {
+      font-family: var(--mono); font-size: 14px; font-weight: 700;
+      color: var(--text0);
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%; height: 3px;
+      background: var(--bg3);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: 2px solid var(--bg1);
+      box-shadow: 0 0 8px rgba(61,142,245,0.5);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 14px rgba(61,142,245,0.7);
+    }
+
+    .pwm-bar-wrap {
+      height: 2px; background: var(--bg3);
+      border-radius: 2px; margin-top: 6px; overflow: hidden;
+    }
+    .pwm-bar-fill {
+      height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--blue-dim), var(--blue));
+      transition: width 0.15s;
+    }
+    .pwm-foot {
+      display: flex; justify-content: space-between;
+      margin-top: 4px;
+    }
+    .pwm-pct {
+      font-family: var(--mono); font-size: 9px; color: var(--text2);
+    }
+
+    .preset-row {
+      display: flex; gap: 6px; margin-top: 14px;
+      padding-top: 14px; border-top: 1px solid var(--border);
+    }
+    .preset-btn {
+      flex: 1; padding: 7px 0;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text1);
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .preset-btn:hover {
+      background: var(--blue-dim);
+      border-color: rgba(61,142,245,0.3);
+      color: var(--blue);
+    }
+
+    /* ── DIGITAL READ ── */
+    .pin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .pin-tile {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+      background: var(--bg2);
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .pin-tile.active {
+      background: var(--teal-dim);
+      border-color: rgba(0,229,160,0.25);
+    }
+    .pin-tile.active-write {
+      background: var(--blue-dim);
+      border-color: rgba(61,142,245,0.25);
+      cursor: pointer;
+    }
+    .pin-tile.active-write:hover { filter: brightness(1.15); }
+    .pin-tile.inactive-write { cursor: pointer; }
+    .pin-tile.inactive-write:hover { border-color: var(--border2); }
+
+    .pin-name {
+      font-family: var(--mono); font-size: 10px; color: var(--text2);
+      margin-bottom: 8px; letter-spacing: 0.08em;
+    }
+    .pin-tile.active .pin-name { color: rgba(0,229,160,0.6); }
+    .pin-tile.active-write .pin-name { color: rgba(61,142,245,0.6); }
+
+    .pin-indicator {
+      width: 8px; height: 8px;
+      border-radius: 50%; margin: 0 auto 7px;
+      background: var(--border2);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .pin-tile.active .pin-indicator {
+      background: var(--teal);
+      box-shadow: 0 0 8px rgba(0,229,160,0.6);
+    }
+    .pin-tile.active-write .pin-indicator {
+      background: var(--blue);
+      box-shadow: 0 0 8px rgba(61,142,245,0.6);
+    }
+
+    .pin-state {
+      font-family: var(--mono); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.1em; color: var(--text2);
+    }
+    .pin-tile.active .pin-state { color: var(--teal); }
+    .pin-tile.active-write .pin-state { color: var(--blue); }
+
+    /* ── DIGITAL WRITE ── */
+    .dw-section {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .dw-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    /* ── TOGGLE SWITCH ── */
+    .dw-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dw-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: pointer;
+      user-select: none;
+    }
+    .dw-item.on {
+      background: var(--blue-dim);
+      border-color: rgba(61,142,245,0.3);
+    }
+    .dw-item:hover { border-color: var(--border2); }
+    .dw-item.on:hover { border-color: rgba(61,142,245,0.5); }
+
+    .dw-item-left {
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .dw-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border2);
+      transition: background 0.25s, box-shadow 0.25s;
+      flex-shrink: 0;
+    }
+    .dw-item.on .dw-dot {
+      background: var(--blue);
+      box-shadow: 0 0 10px rgba(61,142,245,0.7);
+    }
+
+    .dw-pin-name {
+      font-family: var(--mono); font-size: 12px;
+      color: var(--text1); letter-spacing: 0.08em;
+    }
+    .dw-item.on .dw-pin-name { color: #7ab8f0; }
+
+    .dw-state-lbl {
+      font-family: var(--mono); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.12em; color: var(--text2);
+    }
+    .dw-item.on .dw-state-lbl { color: var(--blue); }
+
+    /* the actual toggle pill */
+    .toggle-track {
+      width: 38px; height: 20px;
+      border-radius: 20px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      position: relative;
+      transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+      flex-shrink: 0;
+    }
+    .dw-item.on .toggle-track {
+      background: var(--blue);
+      border-color: var(--blue);
+      box-shadow: 0 0 12px rgba(61,142,245,0.4);
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--text2);
+      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), background 0.25s;
+    }
+    .dw-item.on .toggle-thumb {
+      transform: translateX(18px);
+      background: #fff;
+    }
+
+    .panel-foot {
+      display: flex; justify-content: space-between;
+      margin-top: 12px;
+      font-family: var(--mono); font-size: 9px; color: var(--text2);
+      letter-spacing: 0.06em;
+    }
+    .foot-accent { color: var(--teal); }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      margin-top: 32px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 9px; color: var(--text2);
+      letter-spacing: 0.06em;
+    }
+    .footer-status { display: flex; align-items: center; gap: 8px; }
+    .status-dot {
+      width: 5px; height: 5px; border-radius: 50%; background: var(--teal);
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <i class="fa-solid fa-microchip"></i>
+      </div>
       <div>
         <div class="brand-name">IoT Control Panel</div>
-        <div class="brand-sub">Arduino · 12 pins active</div>
+        <div class="brand-sub">Arduino · MQTT · 12 pins active</div>
       </div>
     </div>
-    <div class="live"><span class="dot"></span>LIVE</div>
-  </div>
+    <div class="header-right">
+      <div class="live-badge"><span class="pulse"></span>LIVE</div>
+      <div class="clock" id="clock">--:--:--</div>
+    </div>
+  </header>
 
-  <div class="hr"></div>
+  <!-- ANALOG READ -->
+  <section class="analog-section">
+    <div class="sec-head">
+      <span class="sec-lbl">Analog Read</span>
+      <span class="sec-rule"></span>
+    </div>
+    <div class="gauge-grid" id="ar-grid"></div>
+  </section>
 
-  <div class="sec">
-    <div class="sec-head"><span class="sec-lbl">Analog read</span><span class="sec-rule"></span></div>
-    <div class="gauge-row" id="ar-grid"></div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-head"><span class="sec-lbl">A0 · live history</span><span class="sec-rule"></span></div>
-    <div class="stat-strip" id="stats"></div>
+  <!-- CHART -->
+  <section class="chart-section">
+    <div class="sec-head">
+      <span class="sec-lbl">A0 · Live History</span>
+      <span class="sec-rule"></span>
+    </div>
+    <div class="stat-row" id="stats"></div>
     <div class="chart-wrap">
-      <canvas id="liveChart" role="img" aria-label="Live A0 analog values over time"></canvas>
+      <canvas id="liveChart"></canvas>
     </div>
-  </div>
+  </section>
 
-  <div class="two-col">
-    <div class="card">
-      <div class="sec-head" style="margin-bottom:14px"><span class="sec-lbl">PWM write</span><span class="sec-rule"></span></div>
-      <div id="pwm-wrap"></div>
+  <!-- PWM + DIGITAL READ -->
+  <div class="bottom-grid">
+
+    <!-- PWM WRITE -->
+    <div class="panel">
+      <div class="sec-head">
+        <span class="sec-lbl">PWM Write</span>
+        <span class="sec-rule"></span>
+      </div>
+      <div class="pwm-list" id="pwm-wrap"></div>
     </div>
-    <div class="card">
-      <div class="sec-head" style="margin-bottom:12px"><span class="sec-lbl">Digital read</span><span class="sec-rule"></span></div>
+
+    <!-- DIGITAL READ -->
+    <div class="panel">
+      <div class="sec-head">
+        <span class="sec-lbl">Digital Read</span>
+        <span class="sec-rule"></span>
+      </div>
       <div class="pin-grid" id="dr-grid"></div>
-      <div class="foot"><span>8 inputs</span><span id="dr-ts">—</span></div>
+      <div class="panel-foot">
+        <span id="dr-count">— inputs</span>
+        <span id="dr-ts">—</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DIGITAL WRITE -->
+  <div class="dw-section">
+    <div class="sec-head">
+      <span class="sec-lbl">Digital Write</span>
+      <span class="sec-rule"></span>
+    </div>
+    <div class="dw-row" id="dw-grid"></div>
+    <div class="panel-foot">
+      <span class="foot-accent" id="dw-cnt">0 HIGH</span>
+      <span>click to toggle</span>
     </div>
   </div>
 
-  <div class="card" style="margin-top:8px">
-    <div class="sec-head" style="margin-bottom:12px"><span class="sec-lbl">Digital write</span><span class="sec-rule"></span></div>
-    <div class="pin-grid" id="dw-grid"></div>
-    <div class="foot"><span id="dw-cnt">0 HIGH</span><span>tap to toggle</span></div>
-  </div>
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <div class="footer-status">
+      <span class="status-dot"></span>
+      <span>MQTT BROKER · 127.0.0.1:1883</span>
+    </div>
+    <span id="tick-count">tick #0</span>
+  </footer>
+
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ─── Constants ────────────────────────────────────────────────────────────────
-const TEAL='#1D9E75', BLUE='#378ADD', AMBER='#BA7517', CORAL='#D85A30';
-const AP=[{n:'A0',c:TEAL},{n:'A1',c:BLUE},{n:'A2',c:AMBER},{n:'A3',c:CORAL}];
-const DR=['D2','D4','D7','D8','D99'];
-const DW=['D13','D1','D0','D14'];
+// ─── Constants ────────────────────────────────────────────────────────────
+const TEAL  = '#00e5a0';
+const BLUE  = '#3d8ef5';
+const AMBER = '#f5a623';
+const CORAL = '#f55a3d';
 
-// ─── PWM: load saved positions from localStorage, fallback to server defaults ─
+const AP = [
+  {n:'A0', c:TEAL,  glow:'--teal'},
+  {n:'A1', c:BLUE,  glow:'--blue'},
+  {n:'A2', c:AMBER, glow:'--amber'},
+  {n:'A3', c:CORAL, glow:'--coral'},
+];
+
+const DR_PINS = ['D2','D4','D7','D8','D99'];
+const DW_PINS = ['D13','D1','D0','D14'];
+
+// ─── State ────────────────────────────────────────────────────────────────
+let aV    = {{ data_a | tojson }};
+let drS   = DR_PINS.map(() => false);
+let dwS   = DW_PINS.map(() => true);
+let hist  = Array.from({length:40}, () => Math.floor(380 + Math.random() * 240));
+let histL = Array.from({length:40}, (_, i) => i % 8 === 0 ? `${40-i}s` : '');
+let tickN = 0;
+
+// ─── PWM — single source of truth, always loaded from Flask ──────────────
 const PWM_DEFAULTS = [
   {n:'D3', v:0},
   {n:'D5', v:0},
-  {n:'D6', v:0}
+  {n:'D6', v:0},
 ];
+let PWM = PWM_DEFAULTS.map(p => ({...p}));
 
-function loadPWMFromStorage() {
-  try {
-    const saved = localStorage.getItem('iot_pwm_values');
-    if (saved) {
-      const vals = JSON.parse(saved); // [128, 64, 200]
-      return PWM_DEFAULTS.map((p, i) => ({
-        n: p.n,
-        v: (vals[i] !== undefined) ? vals[i] : p.v
-      }));
-    }
-  } catch(e) {}
-  return null;
+// ─── Arc SVG gauge ────────────────────────────────────────────────────────
+function toXY(cx, cy, r, deg) {
+  const a = (deg - 90) * Math.PI / 180;
+  return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
 }
 
-function savePWMToStorage() {
-  try {
-    localStorage.setItem('iot_pwm_values', JSON.stringify(PWM.map(p => p.v)));
-  } catch(e) {}
-}
-
-// PWM is the single source of truth — always keep p.v in sync
-let PWM = loadPWMFromStorage() || PWM_DEFAULTS.map(p => ({...p}));
-
-// ─── Sensor / state ────────────────────────────────────────────────────────────
-let aV = {{ data_a | tojson }};
-let drS = DR.map(() => Math.random() > 0.5);
-let dwS = DW.map(() => true);
-let hist = Array.from({length:40}, () => Math.floor(380 + Math.random() * 240));
-let histL = Array.from({length:40}, (_, i) => i % 8 === 0 ? `${40-i}s` : '');
-
-// ─── Gauge ─────────────────────────────────────────────────────────────────────
-function toXY(cx,cy,r,deg){const a=(deg-90)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]}
-
-function arcSVG(val,color,sz){
-  const cx=sz/2,cy=sz/2,r=sz*0.36,sw=sz*0.07;
-  const pct=Math.min(val/1023,1),s=135,e=405,vd=s+pct*(e-s);
-  const [x1,y1]=toXY(cx,cy,r,s),[xe,ye]=toXY(cx,cy,r,e-0.1),[x2,y2]=toXY(cx,cy,r,Math.min(vd,e-0.1));
-  const la=(vd-s)>180?1:0;
-  return`<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}" aria-hidden="true">
-    <path d="M${x1} ${y1} A${r} ${r} 0 1 1 ${xe} ${ye}" fill="none" stroke="#2a2f38" stroke-width="${sw}" stroke-linecap="round"/>
-    ${pct>0?`<path d="M${x1} ${y1} A${r} ${r} 0 ${la} 1 ${x2} ${y2}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round"/>`:''}
+function arcSVG(val, color, sz) {
+  const cx = sz/2, cy = sz/2, r = sz*0.36, sw = sz*0.075;
+  const pct = Math.min(val / 1023, 1), s = 130, e = 410;
+  const vd = s + pct * (e - s);
+  const [x1,y1] = toXY(cx,cy,r,s);
+  const [xe,ye] = toXY(cx,cy,r,e-0.1);
+  const [x2,y2] = toXY(cx,cy,r,Math.min(vd, e-0.1));
+  const la = (vd - s) > 180 ? 1 : 0;
+  return `<svg viewBox="0 0 ${sz} ${sz}" width="${sz}" height="${sz}">
+    <path d="M${x1} ${y1} A${r} ${r} 0 1 1 ${xe} ${ye}"
+      fill="none" stroke="#1e242d" stroke-width="${sw}" stroke-linecap="round"/>
+    ${pct > 0 ? `<path d="M${x1} ${y1} A${r} ${r} 0 ${la} 1 ${x2} ${y2}"
+      fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round"
+      style="filter:drop-shadow(0 0 4px ${color}88)"/>` : ''}
   </svg>`;
 }
 
-function rGauges(){
-  document.getElementById('ar-grid').innerHTML=AP.map((p,i)=>{
-    const v=aV[i],pct=Math.round(v/1023*100);
-    return`<div class="gauge-card">
+// ─── Render: Analog gauges ────────────────────────────────────────────────
+function rGauges() {
+  document.getElementById('ar-grid').innerHTML = AP.map((p, i) => {
+    const v = aV[i], pct = Math.round(v / 1023 * 100);
+    return `<div class="gauge-card" style="--glow-color:${p.c}">
       <div class="gauge-pin">${p.n}</div>
-      ${arcSVG(v,p.c,84)}
-      <div class="gauge-val" style="color:${p.c}">${v}</div>
+      ${arcSVG(v, p.c, 88)}
+      <div class="gauge-val">${v}</div>
       <div class="gauge-pct">${pct}%</div>
     </div>`;
   }).join('');
 }
 
-// ─── Stats ─────────────────────────────────────────────────────────────────────
-function rStats(){
-  const v=aV[0],mn=Math.min(...hist),mx=Math.max(...hist),avg=Math.round(hist.reduce((a,b)=>a+b,0)/hist.length);
-  document.getElementById('stats').innerHTML=[
-    {l:'now',v,c:TEAL},{l:'min',v:mn,c:'#9aa3b0'},{l:'max',v:mx,c:'#9aa3b0'},{l:'avg',v:avg,c:'#9aa3b0'}
-  ].map(s=>`<div class="stat-cell"><div class="stat-lbl">${s.l}</div><div class="stat-val" style="color:${s.c}">${s.v}</div></div>`).join('');
+// ─── Render: Stats strip ──────────────────────────────────────────────────
+function rStats() {
+  const v   = aV[0];
+  const mn  = Math.min(...hist);
+  const mx  = Math.max(...hist);
+  const avg = Math.round(hist.reduce((a,b) => a+b, 0) / hist.length);
+  const cells = [
+    {l:'NOW',  v, primary:true},
+    {l:'MIN',  v:mn},
+    {l:'MAX',  v:mx},
+    {l:'AVG',  v:avg},
+  ];
+  document.getElementById('stats').innerHTML = cells.map(s =>
+    `<div class="stat-card${s.primary?' primary':''}">
+      <div class="stat-lbl">${s.l}</div>
+      <div class="stat-val">${s.v}</div>
+    </div>`
+  ).join('');
 }
 
-// ─── PWM ───────────────────────────────────────────────────────────────────────
-function rPWM(){
+// ─── Render: PWM sliders ──────────────────────────────────────────────────
+function rPWM() {
   const wrap = document.getElementById('pwm-wrap');
   if (!wrap) return;
   wrap.innerHTML = PWM.map((p, i) => {
-    const v = p.v;  // always read from PWM[i].v — single source of truth
+    const v   = p.v;
     const pct = Math.round(v / 255 * 100);
     return `<div class="pwm-block">
       <div class="pwm-header">
-        <span class="pwm-name">${p.n}</span>
-        <span class="pwm-val" id="pv${i}">${v}</span>
+        <span class="pwm-pin">${p.n}</span>
+        <span class="pwm-num" id="pv${i}">${v}</span>
       </div>
-      <input type="range" min="0" max="255" step="1" value="${v}" oninput="upP(${i},this.value)">
-      <div class="pwm-track">
-        <div class="pwm-fill" id="pf${i}" style="width:${pct}%"></div>
+      <input type="range" min="0" max="255" step="1" value="${v}"
+        oninput="upP(${i}, this.value)">
+      <div class="pwm-bar-wrap">
+        <div class="pwm-bar-fill" id="pf${i}" style="width:${pct}%"></div>
       </div>
-      <div class="pwm-sub">
+      <div class="pwm-foot">
+        <span></span>
         <span class="pwm-pct" id="pp${i}">${pct}%</span>
       </div>
     </div>`;
   }).join('') +
   `<div class="preset-row">
-    <button class="preset" onclick="setAll(0)">Off</button>
-    <button class="preset" onclick="setAll(128)">50%</button>
-    <button class="preset" onclick="setAll(255)">Full</button>
+    <button class="preset-btn" onclick="setAll(0)">Off</button>
+    <button class="preset-btn" onclick="setAll(128)">50%</button>
+    <button class="preset-btn" onclick="setAll(255)">Full</button>
   </div>`;
 }
 
 function upP(i, v) {
   v = parseInt(v);
-  PWM[i].v = v;               // ← keep PWM array in sync (was the bug)
-  savePWMToStorage();         // ← persist to localStorage immediately
+  PWM[i].v = v;
   const pct = Math.round(v / 255 * 100);
   document.getElementById('pv' + i).textContent = v;
-  document.getElementById('pf' + i).style.width = pct + '%';
-  document.getElementById('pp' + i).textContent = pct + '%';
+  document.getElementById('pf' + i).style.width  = pct + '%';
+  document.getElementById('pp' + i).textContent  = pct + '%';
 }
 
 function setAll(v) {
   v = parseInt(v);
   PWM = PWM.map(p => ({...p, v}));
-  savePWMToStorage();
   rPWM();
 }
 
-// ─── Digital read / write ──────────────────────────────────────────────────────
-function rDR(){
-  document.getElementById('dr-grid').innerHTML=DR.map((pin,i)=>{
-    const on=drS[i];
-    return`<div class="pin-tile">
+// ─── Render: Digital Read ─────────────────────────────────────────────────
+function rDR() {
+  document.getElementById('dr-grid').innerHTML = DR_PINS.map((pin, i) => {
+    const on = drS[i];
+    return `<div class="pin-tile${on ? ' active' : ''}">
       <div class="pin-name">${pin}</div>
-      <div class="pin-dot" style="background:${on?TEAL:'#2a2f38'}"></div>
-      <div class="pin-status" style="color:${on?TEAL:'#5a6475'}">${on?'HI':'LO'}</div>
+      <div class="pin-indicator"></div>
+      <div class="pin-state">${on ? 'HIGH' : 'LOW'}</div>
     </div>`;
   }).join('');
-  document.getElementById('dr-ts').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const hiCount = drS.filter(Boolean).length;
+  document.getElementById('dr-count').textContent = `${hiCount} / ${DR_PINS.length} HIGH`;
+  document.getElementById('dr-ts').textContent =
+    new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
 }
 
-function rDW(){
-  document.getElementById('dw-grid').innerHTML=DW.map((pin,i)=>{
-    const on=dwS[i];
-    return`<div class="pin-tile${on?' hi-write':''}" onclick="tog(${i})">
-      <div class="pin-name">${pin}</div>
-      <div class="pin-dot" style="background:${on?BLUE:'#2a2f38'}"></div>
-      <div class="pin-status" style="color:${on?BLUE:'#5a6475'}">${on?'HI':'LO'}</div>
+// ─── Render: Digital Write (toggle switches) ─────────────────────────────
+function rDW() {
+  document.getElementById('dw-grid').innerHTML = DW_PINS.map((pin, i) => {
+    const on = dwS[i];
+    return `<div class="dw-item${on ? ' on' : ''}" onclick="togDW(${i})">
+      <div class="dw-item-left">
+        <div class="dw-dot"></div>
+        <span class="dw-pin-name">${pin}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="dw-state-lbl">${on ? 'HIGH' : 'LOW'}</span>
+        <div class="toggle-track">
+          <div class="toggle-thumb"></div>
+        </div>
+      </div>
     </div>`;
   }).join('');
-  document.getElementById('dw-cnt').textContent=dwS.filter(Boolean).length+' HIGH';
+  document.getElementById('dw-cnt').textContent = dwS.filter(Boolean).length + ' HIGH';
 }
 
-function tog(i){dwS[i]=!dwS[i];rDW()}
+function togDW(i) {
+  dwS[i] = !dwS[i];
+  rDW();
+  // Persist to Flask
+  fetch('/set_dw', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ index: i, value: dwS[i] ? 1 : 0 }),
+  }).catch(() => {});
+}
 
-// ─── Chart ─────────────────────────────────────────────────────────────────────
+// ─── Init Digital Write from Flask /last_dw ───────────────────────────────
+function initDW() {
+  fetch('/last_dw')
+    .then(r => r.json())
+    .then(data => {
+      // data expected: [{"n":"D13","v":1}, {"n":"D1","v":0}, ...]
+      dwS = data.map(d => d.v === 1);
+      rDW();
+    })
+    .catch(() => rDW());
+}
+
+// ─── Clock ────────────────────────────────────────────────────────────────
+function rClock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+setInterval(rClock, 1000);
+rClock();
+
+// ─── Chart ────────────────────────────────────────────────────────────────
 let chart;
-function initChart(){
-  chart=new Chart(document.getElementById('liveChart').getContext('2d'),{
-    type:'line',
-    data:{labels:histL,datasets:[{label:'A0',data:hist,borderColor:TEAL,backgroundColor:'rgba(29,158,117,0.08)',borderWidth:1.5,pointRadius:0,fill:true,tension:0.4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{
-        x:{ticks:{color:'#5a6475',font:{size:9,family:'DM Mono,monospace'},maxTicksLimit:6},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'transparent'}},
-        y:{min:0,max:1023,ticks:{color:'#5a6475',font:{size:9,family:'DM Mono,monospace'},stepSize:256},grid:{color:'rgba(255,255,255,0.04)'},border:{color:'transparent'}}
-      },animation:{duration:100}}
+function initChart() {
+  chart = new Chart(document.getElementById('liveChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: histL,
+      datasets: [{
+        label: 'A0',
+        data: hist,
+        borderColor: TEAL,
+        backgroundColor: 'rgba(0,229,160,0.06)',
+        borderWidth: 1.5,
+        pointRadius: 0,
+        fill: true,
+        tension: 0.4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          ticks: { color:'#3d4d62', font:{size:9, family:'Space Mono'}, maxTicksLimit:6 },
+          grid:  { color:'rgba(255,255,255,0.03)' },
+          border:{ color:'transparent' },
+        },
+        y: {
+          min: 0, max: 1023,
+          ticks: { color:'#3d4d62', font:{size:9, family:'Space Mono'}, stepSize:256 },
+          grid:  { color:'rgba(255,255,255,0.03)' },
+          border:{ color:'transparent' },
+        },
+      },
+      animation: { duration: 100 },
+    }
   });
 }
 
-// ─── Init PWM from Flask /last_pwm, but respect localStorage if fresher ────────
+// ─── Init PWM from Flask /last_pwm ────────────────────────────────────────
 function initPWM() {
-  fetch("/last_pwm")
+  fetch('/last_pwm')
     .then(r => r.json())
     .then(serverData => {
-      // Only use server data if localStorage has nothing saved
-      const saved = localStorage.getItem('iot_pwm_values');
-      if (!saved) {
-        PWM = serverData.map(p => ({n: p.n, v: p.v}));
-        savePWMToStorage();
-      }
-      // If localStorage exists, we already loaded it at startup — keep it
+      PWM = serverData.map(p => ({n: p.n, v: p.v}));
       rPWM();
     })
-    .catch(() => rPWM()); // fallback: render with whatever we have
+    .catch(() => rPWM());
 }
 
-// ─── Tick: fetch sensors, push PWM ────────────────────────────────────────────
-function tick(){
-  drS = [true, false, true, false, true];
+// ─── Main tick: fetch sensors + push PWM ─────────────────────────────────
+function tick() {
+  tickN++;
+  document.getElementById('tick-count').textContent = `tick #${tickN}`;
 
-  fetch("/get_sensor")
+  // Fetch sensor data
+  fetch('/get_sensor')
     .then(r => r.json())
     .then(data => {
       aV = data.a;
       hist.shift(); hist.push(aV[0]);
       histL.shift(); histL.push('');
-      rGauges(); rDR(); rStats();
-      if(chart){ chart.data.labels=histL; chart.data.datasets[0].data=hist; chart.update('none'); }
-    });
+      rGauges();
+      rStats();
+      if (chart) {
+        chart.data.labels = histL;
+        chart.data.datasets[0].data = hist;
+        chart.update('none');
+      }
+    })
+    .catch(() => {});
 
-  fetch("/get_pwm", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({pwm1:PWM[0].v, pwm2:PWM[1].v, pwm3:PWM[2].v})
-  });
+  // Fetch digital read (optional — hardcoded for now)
+  drS = [true, false, true, false, true];
+  rDR();
+
+  // Push PWM to Flask
+  fetch('/get_pwm', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      pwm1: PWM[0].v,
+      pwm2: PWM[1].v,
+      pwm3: PWM[2].v,
+    }),
+  }).catch(() => {});
 }
 
-// ─── Boot ──────────────────────────────────────────────────────────────────────
-initPWM();          // draws sliders (from localStorage or /last_pwm)
+// ─── Boot ─────────────────────────────────────────────────────────────────
+initPWM();     // fetch PWM from Flask → renders sliders
+initDW();      // fetch DW state from Flask → renders toggles
 rGauges();
 rDR();
-rDW();
 rStats();
 setTimeout(initChart, 60);
 setInterval(tick, 1200);
 </script>
+</body>
+</html>
